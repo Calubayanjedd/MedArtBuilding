@@ -437,7 +437,7 @@
                 tvOnLeaveList.innerHTML = onLeaveDoctors.map(doc => `
                     <div class="doctor-item">
                         <div><strong>${doc.name}</strong> - ${doc.specialization}</div>
-                        ${doc.tentative ? `<div class="tentative">Expected return: ${formatDate(doc.tentative)}</div>` : ''}
+                        ${doc.tentative ? `<div class="tentative">Tentative return: ${formatDate(doc.tentative)}</div>` : ''}
                     </div>
                 `).join('');
                 
