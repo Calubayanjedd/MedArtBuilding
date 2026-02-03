@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Sinai MDI Hospital - Information Display</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .tv-header {
+            text-align: center;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .tv-header h1 {
+            font-size: 38px;
+            color: #1a1a1a;
+            margin-bottom: 5px;
+        }
+
+        .tv-header p {
+            font-size: 18px;
+            color: #2563eb;
+        }
+
+        .announcements-section {
+            background: #1e293b;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .announcements-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .megaphone-icon {
+            width: 40px;
+            height: 40px;
+            background: #2563eb;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .announcements-header h2 {
+            color: white;
+            font-size: 32px;
+        }
+
+        .announcement-item {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            position: relative;
+            padding-left: 50px;
+        }
+
+        .announcement-item::before {
+            content: '•';
+            position: absolute;
+            left: 25px;
+            top: 20px;
+            color: #2563eb;
+            font-size: 24px;
+        }
+
+        .announcement-item p {
+            font-size: 22px;
+            color: #1a1a1a;
+        }
+
+        .status-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .status-card {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .status-card-header {
+            padding: 10px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .status-card-header.no-clinic {
+            background: #dc2626;
+        }
+
+        .status-card-header.on-leave {
+            background: #ea580c;
+        }
+
+        .status-card-body {
+            background: white;
+            padding: 30px;
+            text-align: center;
+            color: #9ca3af;
+            font-size: 20px;
+        }
+
+        .doctor-list {
+            background: white;
+            padding: 20px;
+            max-height: 500px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        /* Custom scrollbar styling */
+        .doctor-list::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        .doctor-list::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 5px;
+        }
+
+        .doctor-list::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 5px;
+        }
+
+        .doctor-list::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Smooth scrolling */
+        .doctor-list {
+            scroll-behavior: smooth;
+        }
+
+        .doctor-item {
+            padding: 15px;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 18px;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .doctor-item:last-child {
+            border-bottom: none;
+        }
+
+        .doctor-item .tentative {
+            font-size: 14px;
+            color: #64748b;
+            margin-top: 5px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tv-footer {
+            text-align: center;
+            color: #64748b;
+            font-size: 18px;
+            margin-top: 30px;
+        }
+
+        .admin-link {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            color: #2563eb;
+            font-size: 14px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: all 0.2s;
+            z-index: 100;
+        }
+
+        .admin-link:hover {
+            background: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 1400px) {
+            .doctor-item {
+                font-size: 16px;
+                padding: 12px;
+            }
+            
+            .doctor-item .tentative {
+                font-size: 12px;
+            }
+
+            .doctor-list {
+                max-height: 400px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .status-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .tv-header h1 {
+                font-size: 32px;
+            }
+            
+            .tv-header p {
+                font-size: 18px;
+            }
+
+            .doctor-list {
+                max-height: 300px;
+            }
+        }
+
+        /* More items indicator */
+        .more-items-indicator {
+            position: sticky;
+            bottom: 0;
+            background: linear-gradient(to bottom, transparent, white 50%);
+            padding: 20px 0 10px;
+            text-align: center;
+            color: #64748b;
+            font-size: 14px;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <a href="admin.html" class="admin-link">⚙️ Admin Dashboard</a>
+
+    <div class="tv-header">
+        <div class=""></div>
+        <h1>NEW SINAI MDI HOSPITAL</h1>
+        <p>Information Medical Arts Building</p>
+    </div>
+
+    <div class="announcements-section">
+        <div class="announcements-header">
+            <div class="megaphone-icon">📢</div>
+            <h2>ANNOUNCEMENTS</h2>
+        </div>
+        <div id="tvAnnouncementsList">
+            <div class="announcement-item">
+                <p>Loading announcements...</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="status-cards">
+        <div class="status-card">
+            <div class="status-card-header no-clinic">
+                <span>❌</span>
+                <span>NO CLINIC TODAY</span>
+            </div>
+            <div class="status-card-body" id="tvNoClinicList">
+                Loading...
+            </div>
+        </div>
+
+        <div class="status-card">
+            <div class="status-card-header on-leave">
+                <span>📅</span>
+                <span>ON LEAVE</span>
+            </div>
+            <div class="status-card-body" id="tvOnLeaveList">
+                Loading...
+            </div>
+        </div>
+    </div>
+
+    <div class="tv-footer">
+        <p>Last updated: <span id="lastUpdated">Loading...</span></p>
+    </div>
+
+    <script>
+        // Load data from localStorage
+        function loadData() {
+            const announcements = localStorage.getItem('hospitalAnnouncements');
+            const doctors = localStorage.getItem('hospitalDoctors');
+            
+            return {
+                announcements: announcements ? JSON.parse(announcements) : [
+                    { id: 0, message: "Hello the adult will no longer needed here.", priority: 0, active: true }
+                ],
+                doctors: doctors ? JSON.parse(doctors) : []
+            };
+        }
+
+        function updateLastUpdated() {
+            const now = new Date();
+            const formatted = now.toLocaleString('en-US', {
+                month: 'numeric',
+                day: 'numeric',
+                year: 'numeric',
+                hour: 'numeric',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true
+            });
+            document.getElementById('lastUpdated').textContent = formatted;
+        }
+
+        // Auto-scroll function for long lists
+        function setupAutoScroll(element, itemCount) {
+            if (itemCount > 5) { // Only auto-scroll if more than 5 items
+                let scrollPosition = 0;
+                const scrollSpeed = 1; // pixels per frame
+                const pauseTime = 3000; // pause at top/bottom in ms
+                let isPaused = false;
+                let direction = 1; // 1 for down, -1 for up
+
+                function autoScroll() {
+                    if (isPaused) return;
+
+                    scrollPosition += scrollSpeed * direction;
+                    element.scrollTop = scrollPosition;
+
+                    // Check if we've reached the bottom
+                    if (scrollPosition >= element.scrollHeight - element.clientHeight) {
+                        isPaused = true;
+                        direction = -1;
+                        setTimeout(() => {
+                            isPaused = false;
+                        }, pauseTime);
+                    }
+
+                    // Check if we've reached the top
+                    if (scrollPosition <= 0) {
+                        isPaused = true;
+                        direction = 1;
+                        setTimeout(() => {
+                            isPaused = false;
+                        }, pauseTime);
+                    }
+                }
+
+                // Clear any existing interval for this element
+                if (element.scrollInterval) {
+                    clearInterval(element.scrollInterval);
+                }
+
+                // Start auto-scrolling
+                element.scrollInterval = setInterval(autoScroll, 50);
+            } else {
+                // Clear auto-scroll if fewer items
+                if (element.scrollInterval) {
+                    clearInterval(element.scrollInterval);
+                    element.scrollInterval = null;
+                }
+            }
+        }
+
+        function updateTVDisplay() {
+            const data = loadData();
+            
+            // Update announcements on TV
+            const activeAnnouncements = data.announcements.filter(a => a.active).sort((a, b) => b.priority - a.priority);
+            const tvAnnouncementsList = document.getElementById('tvAnnouncementsList');
+            
+            if (activeAnnouncements.length === 0) {
+                tvAnnouncementsList.innerHTML = '<div class="announcement-item"><p>No announcements at this time.</p></div>';
+            } else {
+                tvAnnouncementsList.innerHTML = activeAnnouncements.map(ann => `
+                    <div class="announcement-item">
+                        <p>${ann.message}</p>
+                    </div>
+                `).join('');
+            }
+
+            // Update No Clinic list
+            const noClinicDoctors = data.doctors.filter(d => d.status === 'no-clinic');
+            const tvNoClinicList = document.getElementById('tvNoClinicList');
+            
+            if (noClinicDoctors.length === 0) {
+                tvNoClinicList.innerHTML = 'No doctors listed';
+                tvNoClinicList.className = 'status-card-body';
+            } else {
+                tvNoClinicList.className = 'doctor-list';
+                tvNoClinicList.innerHTML = noClinicDoctors.map(doc => `
+                    <div class="doctor-item">
+                        <strong>${doc.name}</strong> - ${doc.specialization}
+                    </div>
+                `).join('');
+                
+                // Setup auto-scroll for long lists
+                setupAutoScroll(tvNoClinicList, noClinicDoctors.length);
+            }
+
+            // Update On Leave list
+            const onLeaveDoctors = data.doctors.filter(d => d.status === 'on-leave');
+            const tvOnLeaveList = document.getElementById('tvOnLeaveList');
+            
+            if (onLeaveDoctors.length === 0) {
+                tvOnLeaveList.innerHTML = 'No doctors listed';
+                tvOnLeaveList.className = 'status-card-body';
+            } else {
+                tvOnLeaveList.className = 'doctor-list';
+                tvOnLeaveList.innerHTML = onLeaveDoctors.map(doc => `
+                    <div class="doctor-item">
+                        <div><strong>${doc.name}</strong> - ${doc.specialization}</div>
+                        ${doc.tentative ? `<div class="tentative">Expected return: ${formatDate(doc.tentative)}</div>` : ''}
+                    </div>
+                `).join('');
+                
+                // Setup auto-scroll for long lists
+                setupAutoScroll(tvOnLeaveList, onLeaveDoctors.length);
+            }
+
+            updateLastUpdated();
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+            });
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateTVDisplay();
+        });
+
+        // Auto-refresh every 5 seconds to check for updates
+        setInterval(updateTVDisplay, 5000);
+
+        // Also update timestamp every 30 seconds
+        setInterval(updateLastUpdated, 30000);
+
+        // Listen for storage events (updates from other tabs)
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'hospitalAnnouncements' || e.key === 'hospitalDoctors') {
+                updateTVDisplay();
+            }
+        });
+    </script>
+</body>
+</html>
