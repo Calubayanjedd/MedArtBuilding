@@ -362,6 +362,7 @@
             font-size: 12px;
             color: #ea580c;
             margin-top: 3px;
+            font-style: italic;
         }
 
         .status-badge {
@@ -778,7 +779,7 @@
                         <h4>${doc.name}</h4>
                         <p>${doc.specialization}</p>
                         <span class="status-badge ${doc.status}">${formatStatus(doc.status)}</span>
-                        ${doc.tentative ? `<div class="tentative">Return: ${formatDate(doc.tentative)}</div>` : ''}
+                        ${doc.tentative ? `<div class="tentative">Tentative return: ${formatDate(doc.tentative)}</div>` : ''}
                     </div>
                     <div class="doctor-actions">
                         <button class="edit-btn" onclick="openEditDoctorModal(${doc.id})">✏️ Edit</button>
